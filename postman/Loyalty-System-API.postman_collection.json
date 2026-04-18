@@ -1,0 +1,174 @@
+{
+  "info": {
+    "_postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39",
+    "name": "Loyalty System API",
+    "description": "Collection test cac API trong bai tap Loyalty System.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "API Docs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/docs",
+          "host": ["{{baseUrl}}"],
+          "path": ["docs"]
+        },
+        "description": "Kiem tra endpoint docs cua API Platform."
+      },
+      "response": []
+    },
+    {
+      "name": "OpenAPI JSON",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/docs.jsonopenapi",
+          "host": ["{{baseUrl}}"],
+          "path": ["docs.jsonopenapi"]
+        },
+        "description": "Lay OpenAPI JSON."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Transaction",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "var json = pm.response.json();",
+              "if (json.transaction_id) {",
+              "  pm.environment.set('lastTransactionId', json.transaction_id);",
+              "}",
+              "if (json.points_earned) {",
+              "  pm.environment.set('lastPointsEarned', json.points_earned);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"member_id\": {{memberId}},\n  \"amount\": \"{{amount}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/transactions",
+          "host": ["{{baseUrl}}"],
+          "path": ["transactions"]
+        },
+        "description": "Tao giao dich va cong diem theo ty le 1%."
+      },
+      "response": []
+    },
+    {
+      "name": "Create Redemption",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "var json = pm.response.json();",
+              "if (json.redemption_id) {",
+              "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/redemptions",
+          "host": ["{{baseUrl}}"],
+          "path": ["redemptions"]
+        },
+        "description": "Doi qua bang diem."
+      },
+      "response": []
+    },
+    {
+      "name": "Get Wallet Inquiry",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "var json = pm.response.json();",
+              "if (json.balance) {",
+              "  pm.environment.set('lastWalletBalance', json.balance);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/members/{{memberId}}/wallet",
+          "host": ["{{baseUrl}}"],
+          "path": ["members", "{{memberId}}", "wallet"]
+        },
+        "description": "Truy van vi diem cua member."
+      },
+      "response": []
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000/api/v1"
+    },
+    {
+      "key": "memberId",
+      "value": "1"
+    },
+    {
+      "key": "giftId",
+      "value": "1"
+    },
+    {
+      "key": "amount",
+      "value": "100000.00"
+    }
+  ]
+}
