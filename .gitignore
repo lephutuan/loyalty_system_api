@@ -1,7 +1,28 @@
 /vendor/
-/.idea/
-/.phpunit.result.cache
 /var/
+
+# IDE/editor files
+/.idea/
+/.vscode/
+
+# Local environment overrides and secrets
 /.env.local
+/.env.local.php
 /.env.*.local
+/auth.json
+
+# Test and static analysis caches
+/.phpunit.result.cache
+/.phpunit.cache/
+/.php-cs-fixer.cache
+/.phpstan/
+
+# Logs and local artifacts
+*.log
+*.sqlite
+*.sqlite3
+
+# OS-specific files
+.DS_Store
+Thumbs.db
 .env

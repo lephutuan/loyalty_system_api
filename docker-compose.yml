@@ -6,8 +6,8 @@ services:
     ports:
       - "8000:80"
     environment:
-      APP_ENV: dev
-      DATABASE_URL: mysql://app:app@mysql:3306/loyalty?serverVersion=8.0&charset=utf8mb4
+      APP_ENV: ${APP_ENV:-dev}
+      DATABASE_URL: ${DATABASE_URL}
     volumes:
       - ./:/var/www/html
     depends_on:
@@ -18,10 +18,10 @@ services:
     container_name: mysql
     command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      MYSQL_DATABASE: loyalty
-      MYSQL_USER: app
-      MYSQL_PASSWORD: app
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
@@ -31,9 +31,9 @@ services:
     image: phpmyadmin:5-apache
     container_name: phpmyadmin
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: ${PMA_HOST:-mysql}
+      PMA_PORT: ${PMA_PORT:-3306}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "8080:80"
     depends_on:

@@ -102,6 +102,20 @@ Yêu cầu:
 - Docker Desktop đang chạy
 - Port trống: 8000, 3306, 8080
 
+Bước 0: Tạo file env local từ mẫu
+
+```bash
+cp .env.example .env
+```
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Bạn có thể chỉnh các giá trị `MYSQL_*`, `DATABASE_URL` trong `.env` theo môi trường local trước khi chạy container.
+
 Bước 1: Build và khởi động container
 
 ```bash
@@ -128,10 +142,10 @@ Bước 4: Kiểm tra API docs
 Bước 5: Truy cập phpMyAdmin
 
 - URL: http://localhost:8080
-- Host: mysql
-- User: app
-- Password: app
-- DB: loyalty
+- Host: theo biến `PMA_HOST` trong `.env` (mặc định `mysql`)
+- User: theo `MYSQL_USER` trong `.env`
+- Password: theo `MYSQL_PASSWORD` trong `.env`
+- DB: theo `MYSQL_DATABASE` trong `.env`
 
 ## 5. Lệnh kiểm thử nhanh API
 
