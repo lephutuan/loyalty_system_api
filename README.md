@@ -134,6 +134,14 @@ Bước 3: Chạy migration tạo schema
 docker compose exec app php bin/console doctrine:migrations:migrate -n
 ```
 
+Bước 3.1: Seed dữ liệu mẫu đầy đủ cho tất cả bảng
+
+```bash
+docker compose exec app php bin/console app:seed:loyalty --reset
+```
+
+Lệnh này sẽ nạp dữ liệu mẫu cho `members`, `wallets`, `transactions`, `points`, `gifts`, `redemptions` để test API ngay, đặc biệt endpoint đổi quà.
+
 Bước 4: Kiểm tra API docs
 
 - Swagger/OpenAPI UI: http://localhost:8000/api/v1/docs
