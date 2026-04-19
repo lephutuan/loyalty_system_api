@@ -116,6 +116,10 @@ Copy-Item .env.example .env
 
 Bạn có thể chỉnh các giá trị `MYSQL_*`, `DATABASE_URL` trong `.env` theo môi trường local trước khi chạy container.
 
+Lưu ý: container app được cấu hình chạy ở `prod` để giảm đáng kể thời gian phản hồi API. Nếu cần debug/dev mode, hãy override `APP_ENV=dev` khi khởi chạy compose.
+
+`vendor` và `var` được tách sang Docker volumes riêng để tránh chậm do bind mount trên Windows.
+
 Bước 1: Build và khởi động container
 
 ```bash

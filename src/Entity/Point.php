@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PointRepository::class)]
+#[ORM\Index(name: 'idx_points_wallet_created_at', columns: ['wallet_id', 'created_at'])]
 #[ORM\Table(name: 'points')]
 class Point
 {

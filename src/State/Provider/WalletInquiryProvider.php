@@ -6,11 +6,11 @@ namespace App\State\Provider;
 
 use App\Dto\PointHistoryItem;
 use App\Dto\WalletInquiryOutput;
-use App\Entity\Point;
 use App\Repository\MemberRepository;
 use App\Repository\PointRepository;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
+use DateTimeInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -40,14 +40,20 @@ final class WalletInquiryProvider implements ProviderInterface
 
         $wallet = $member->getWallet();
         $recentPoints = array_map(
-            static fn (Point $point): PointHistoryItem => new PointHistoryItem(
-                pointAmount: $point->getPointAmount(),
-                description: $point->getDescription(),
-                transactionId: $point->getTransaction()?->getId(),
-                redemptionId: $point->getRedemption()?->getId(),
-                createdAt: $point->getCreatedAt()->format(DATE_ATOM),
-            ),
-            $this->pointRepository->findLatestForWallet($wallet, 10),
+            static function (array $row): PointHistoryItem {
+                $createdAt = $row['createdAt'] ?? null;
+
+                return new PointHistoryItem(
+                    pointAmount: (string) ($row['pointAmount'] ?? '0.00'),
+                    description: (string) ($row['description'] ?? ''),
+                    transactionId: isset($row['transactionId']) ? (int) $row['transactionId'] : null,
+                    redemptionId: isset($row['redemptionId']) ? (int) $row['redemptionId'] : null,
+                    createdAt: $createdAt instanceof DateTimeInterface
+                    ? $createdAt->format(DATE_ATOM)
+                    : (new \DateTimeImmutable((string) $createdAt))->format(DATE_ATOM),
+                );
+            },
+            $this->pointRepository->findLatestHistoryForWallet($wallet, 10),
         );
 
         return new WalletInquiryOutput(

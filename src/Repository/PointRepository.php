@@ -20,25 +20,29 @@ final class PointRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return array<int, Point>
+     * @return array<int, array{
+     *     pointAmount: string,
+     *     description: string,
+     *     transactionId: int|null,
+     *     redemptionId: int|null,
+     *     createdAt: mixed
+     * }>
      */
-    public function findLatestForWallet(Wallet $wallet, int $limit = 10): array
+    public function findLatestHistoryForWallet(Wallet $wallet, int $limit = 10): array
     {
-        $result = (array) $this->createQueryBuilder('point')
+        return $this->createQueryBuilder('point')
+            ->select(
+                'point.pointAmount AS pointAmount',
+                'point.description AS description',
+                'IDENTITY(point.transaction) AS transactionId',
+                'IDENTITY(point.redemption) AS redemptionId',
+                'point.createdAt AS createdAt'
+            )
             ->andWhere('point.wallet = :wallet')
             ->setParameter('wallet', $wallet)
             ->orderBy('point.createdAt', 'DESC')
             ->setMaxResults($limit)
             ->getQuery()
-            ->getResult();
-
-        $filtered = [];
-        foreach ($result as $item) {
-            if ($item instanceof Point) {
-                $filtered[] = $item;
-            }
-        }
-
-        return $filtered;
+            ->getArrayResult();
     }
 }

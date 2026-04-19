@@ -8,6 +8,17 @@ RUN apt-get update \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
 
+RUN printf '%s\n' \
+    'opcache.enable=1' \
+    'opcache.enable_cli=1' \
+    'opcache.validate_timestamps=0' \
+    'opcache.revalidate_freq=0' \
+    'opcache.max_accelerated_files=20000' \
+    'opcache.memory_consumption=128' \
+    'realpath_cache_size=4096K' \
+    'realpath_cache_ttl=600' \
+    > /usr/local/etc/php/conf.d/opcache-performance.ini
+
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 COPY . /var/www/html
