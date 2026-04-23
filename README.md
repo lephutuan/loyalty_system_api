@@ -246,7 +246,62 @@ Lưu ý: cần bật Xdebug hoặc PCOV trong image PHP để đo coverage.
 
 Mục tiêu: với món quà còn stock = 1, gửi 2 request redeem gần như đồng thời, chỉ 1 request thành công.
 
-Bạn có thể mở 2 terminal và chạy cùng lúc lệnh redeem ở mục 5.2, hoặc dùng công cụ load test.
+Sau khi seed dữ liệu, hệ thống có sẵn quà `Race Gift - Single Stock` với `stock = 1` để test race.
+
+Chạy lại seed trước khi test để đảm bảo dữ liệu đúng:
+
+```bash
+docker compose exec app php bin/console app:seed:loyalty --reset
+```
+
+### 8.1. Race test tự động bằng NodeJS
+
+Chạy từ máy host (không cần vào container):
+
+```bash
+node scripts/race-load-test.js redeem-race
+```
+
+Hoặc dùng composer script từ host:
+
+```bash
+composer race:redeem
+```
+
+### 8.2. Load test transaction burst bằng NodeJS
+
+```bash
+CONCURRENCY=20 ROUNDS=10 node scripts/race-load-test.js transaction-burst
+```
+
+Biến môi trường hỗ trợ:
+
+- `BASE_URL` (mặc định `http://localhost:8000/api/v1`)
+- `MEMBER_ID` (mặc định `1`)
+- `GIFT_ID` (mặc định `4`, là race gift trong seed)
+- `CONCURRENCY`, `ROUNDS`, `TIMEOUT_MS`
+- `RESEED_COMMAND` (dùng cho scenario `redeem-race-loop`)
+
+### 8.3. Chạy bộ race suite chuyên sâu (Windows PowerShell)
+
+Script này tự động:
+
+- migrate DB
+- chạy race loop nhiều vòng (mỗi vòng tự reseed)
+- chạy transaction burst load
+- hậu kiểm invariants bằng SQL
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/run-race-suite.ps1 -Rounds 10
+```
+
+Kết quả pass khi:
+
+- mọi vòng race loop đạt mẫu `1 x 201` và `1 x 409`
+- transaction burst không có request lỗi
+- `ledger_mismatch_count = 0`
+- `negative_stock_count = 0`
+- `negative_balance_count = 0`
 
 Kỳ vọng:
 
@@ -268,5 +323,7 @@ Kỳ vọng:
 
 - Công thức tính điểm mặc định: Point = Amount x 1%
 - Sử dụng decimal string + BCMath để tránh sai số float
-- Redeem dùng pessimistic lock để giảm race condition
+- Áp dụng Hybrid locking:
+  - Pessimistic locking (`SELECT ... FOR UPDATE`) cho các luồng ghi chính
+  - Optimistic locking bằng trường `version` trên `wallets` và `gifts` để phát hiện lost update
 - Mọi write quan trọng chạy trong transaction để đảm bảo all-or-nothing

@@ -8,6 +8,7 @@ use App\Dto\CreateTransactionInput;
 use App\Dto\TransactionOutput;
 use App\Entity\Point;
 use App\Entity\Transaction;
+use App\Entity\Wallet;
 use App\Enum\TransactionStatus;
 use App\Repository\MemberRepository;
 use App\Service\LoyaltyPointCalculator;
@@ -15,7 +16,9 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -51,22 +54,29 @@ final class CreateTransactionProcessor implements ProcessorInterface
         $wallet = $member->getWallet();
         $amount = number_format((float) $data->amount, 2, '.', '');
 
-        $transaction = $this->entityManager->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($amount, $member, $wallet): Transaction {
-            $entityManager->lock($wallet, LockMode::PESSIMISTIC_WRITE);
+        try {
+            $transaction = $this->entityManager->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($amount, $member, $wallet): Transaction {
+                $lockedWallet = $entityManager->find(Wallet::class, $wallet->getId(), LockMode::PESSIMISTIC_WRITE);
+                if (!$lockedWallet instanceof Wallet) {
+                    throw new NotFoundHttpException('Wallet not found.');
+                }
 
-            $transaction = new Transaction($member, $amount, TransactionStatus::Completed);
-            $earnedPoints = $this->pointCalculator->calculateEarnedPoints($amount);
+                $transaction = new Transaction($member, $amount, TransactionStatus::Completed);
+                $earnedPoints = $this->pointCalculator->calculateEarnedPoints($amount);
 
-            $wallet->credit($earnedPoints);
+                $lockedWallet->credit($earnedPoints);
 
-            $point = new Point($wallet, $earnedPoints, 'Earn points from transaction.', $transaction);
+                $point = new Point($lockedWallet, $earnedPoints, 'Earn points from transaction.', $transaction);
 
-            $entityManager->persist($transaction);
-            $entityManager->persist($point);
-            $entityManager->flush();
+                $entityManager->persist($transaction);
+                $entityManager->persist($point);
+                $entityManager->flush();
 
-            return $transaction;
-        });
+                return $transaction;
+            });
+        } catch (OptimisticLockException $exception) {
+            throw new ConflictHttpException('Concurrent update detected. Please retry.', $exception);
+        }
 
         $earnedPoints = $this->pointCalculator->calculateEarnedPoints($amount);
 

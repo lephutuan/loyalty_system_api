@@ -1,0 +1,1178 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39"
+    },
+    "item": [
+      {
+        "id": "984bae80-16bf-4a48-ba19-a6387aa5205d",
+        "name": "API Docs",
+        "request": {
+          "description": {
+            "content": "Kiem tra endpoint docs cua API Platform.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "docs"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "204fd2a9-29bc-449a-87b5-91a1028cc007",
+        "name": "OpenAPI JSON",
+        "request": {
+          "description": {
+            "content": "Lay OpenAPI JSON.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "docs.jsonopenapi"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "9edf397f-e704-45f5-b989-c00832337bda",
+        "name": "Create Transaction",
+        "request": {
+          "description": {
+            "content": "Tao giao dich va cong diem theo ty le 1%.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "transactions"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": {{memberId}},\n  \"amount\": \"{{amount}}\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "4c62c336-50f0-44d2-83a7-a6b9a855d5ab",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 201', function () {",
+                "  pm.response.to.have.status(201);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.transaction_id) {",
+                "  pm.environment.set('lastTransactionId', json.transaction_id);",
+                "}",
+                "if (json.points_earned) {",
+                "  pm.environment.set('lastPointsEarned', json.points_earned);",
+                "}"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "075c390f-e78b-4861-aca4-94306766b0a4",
+        "name": "Create Redemption",
+        "request": {
+          "description": {
+            "content": "Doi qua bang diem.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "redemptions"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "66298ccf-2e1b-4570-b61a-398cdcde7633",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 201', function () {",
+                "  pm.response.to.have.status(201);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.redemption_id) {",
+                "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                "}"
+              ],
+              "_lastExecutionId": "dbf5981a-af44-4c3b-a005-092d310d026e"
+            }
+          }
+        ]
+      },
+      {
+        "id": "f31880ef-d3ac-413f-8a7e-f31e54b6e360",
+        "name": "Get Wallet Inquiry",
+        "request": {
+          "description": {
+            "content": "Truy van vi diem cua member.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "members",
+              "{{memberId}}",
+              "wallet"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "d83934c8-560d-4382-aeca-f9f703370952",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "  pm.response.to.have.status(200);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.balance) {",
+                "  pm.environment.set('lastWalletBalance', json.balance);",
+                "}"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://localhost:8000/api/v1",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "memberId"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "giftId"
+      },
+      {
+        "type": "any",
+        "value": "100000.00",
+        "key": "amount"
+      }
+    ],
+    "info": {
+      "_postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39",
+      "name": "Loyalty System API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Collection test cac API trong bai tap Loyalty System.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2026-04-18T16:00:00.000Z",
+      "postman_exported_using": "GitHub Copilot"
+    },
+    "id": "4d5f77de-71d4-46aa-95f9-4d91df272ffa",
+    "name": "Loyalty System Local",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:8000/api/v1",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "2",
+        "key": "memberId"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "giftId"
+      },
+      {
+        "type": "any",
+        "value": "100000.00",
+        "key": "amount"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastTransactionId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastPointsEarned"
+      },
+      {
+        "type": "any",
+        "value": 5,
+        "key": "lastRedemptionId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastWalletBalance"
+      }
+    ]
+  },
+  "globals": {
+    "id": "94f70d30-66b8-4296-8b5a-1bd141329d82",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "testScripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 259,
+      "responseMin": 259,
+      "responseMax": 259,
+      "responseSd": 0,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1776735727570,
+      "completed": 1776735727931
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 1,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "54ba7f5a-dd32-4cc4-89fa-2b0816ae6cea",
+          "httpRequestId": "d913f08d-1cd1-4ac7-9d3a-2e6dcd5f97e9"
+        },
+        "item": {
+          "id": "075c390f-e78b-4861-aca4-94306766b0a4",
+          "name": "Create Redemption",
+          "request": {
+            "description": {
+              "content": "Doi qua bang diem.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "redemptions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "66298ccf-2e1b-4570-b61a-398cdcde7633",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.redemption_id) {",
+                  "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                  "}"
+                ],
+                "_lastExecutionId": "dbf5981a-af44-4c3b-a005-092d310d026e"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Doi qua bang diem.",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "api",
+              "v1",
+              "redemptions"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "886365a3-2955-4e44-8724-924f78a1204e",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "36",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": 2,\n  \"gift_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "b8eecd64-b78e-4a84-8af4-c44c04674496",
+          "status": "Created",
+          "code": 201,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Tue, 21 Apr 2026 01:42:07 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Apache/2.4.66 (Debian)"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.3.30"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "deny"
+            },
+            {
+              "key": "Content-Location",
+              "value": "/api/v1/.well-known/genid/5ed8834e04533006e34e.jsonld"
+            },
+            {
+              "key": "Location",
+              "value": "/api/v1/.well-known/genid/5ed8834e04533006e34e"
+            },
+            {
+              "key": "Accept-Post",
+              "value": "application/ld+json, application/json"
+            },
+            {
+              "key": "Allow",
+              "value": "OPTIONS, HEAD, POST"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private"
+            },
+            {
+              "key": "Link",
+              "value": "<http://localhost:8000/api/v1/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5, max=100"
+            },
+            {
+              "key": "Connection",
+              "value": "Keep-Alive"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/ld+json; charset=utf-8"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              64,
+              99,
+              111,
+              110,
+              116,
+              101,
+              120,
+              116,
+              34,
+              58,
+              123,
+              34,
+              64,
+              118,
+              111,
+              99,
+              97,
+              98,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              58,
+              92,
+              47,
+              92,
+              47,
+              108,
+              111,
+              99,
+              97,
+              108,
+              104,
+              111,
+              115,
+              116,
+              58,
+              56,
+              48,
+              48,
+              48,
+              92,
+              47,
+              97,
+              112,
+              105,
+              92,
+              47,
+              118,
+              49,
+              92,
+              47,
+              100,
+              111,
+              99,
+              115,
+              46,
+              106,
+              115,
+              111,
+              110,
+              108,
+              100,
+              35,
+              34,
+              44,
+              34,
+              104,
+              121,
+              100,
+              114,
+              97,
+              34,
+              58,
+              34,
+              104,
+              116,
+              116,
+              112,
+              58,
+              92,
+              47,
+              92,
+              47,
+              119,
+              119,
+              119,
+              46,
+              119,
+              51,
+              46,
+              111,
+              114,
+              103,
+              92,
+              47,
+              110,
+              115,
+              92,
+              47,
+              104,
+              121,
+              100,
+              114,
+              97,
+              92,
+              47,
+              99,
+              111,
+              114,
+              101,
+              35,
+              34,
+              44,
+              34,
+              114,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              114,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              44,
+              34,
+              109,
+              101,
+              109,
+              98,
+              101,
+              114,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              109,
+              101,
+              109,
+              98,
+              101,
+              114,
+              95,
+              105,
+              100,
+              34,
+              44,
+              34,
+              103,
+              105,
+              102,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              103,
+              105,
+              102,
+              116,
+              95,
+              105,
+              100,
+              34,
+              44,
+              34,
+              112,
+              111,
+              105,
+              110,
+              116,
+              115,
+              95,
+              117,
+              115,
+              101,
+              100,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              112,
+              111,
+              105,
+              110,
+              116,
+              115,
+              95,
+              117,
+              115,
+              101,
+              100,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              92,
+              47,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              125,
+              44,
+              34,
+              64,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              82,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              79,
+              117,
+              116,
+              112,
+              117,
+              116,
+              34,
+              44,
+              34,
+              64,
+              105,
+              100,
+              34,
+              58,
+              34,
+              92,
+              47,
+              97,
+              112,
+              105,
+              92,
+              47,
+              118,
+              49,
+              92,
+              47,
+              46,
+              119,
+              101,
+              108,
+              108,
+              45,
+              107,
+              110,
+              111,
+              119,
+              110,
+              92,
+              47,
+              103,
+              101,
+              110,
+              105,
+              100,
+              92,
+              47,
+              52,
+              52,
+              52,
+              57,
+              51,
+              100,
+              53,
+              52,
+              55,
+              97,
+              49,
+              98,
+              51,
+              48,
+              57,
+              57,
+              51,
+              101,
+              101,
+              54,
+              34,
+              44,
+              34,
+              114,
+              101,
+              100,
+              101,
+              109,
+              112,
+              116,
+              105,
+              111,
+              110,
+              95,
+              105,
+              100,
+              34,
+              58,
+              53,
+              44,
+              34,
+              109,
+              101,
+              109,
+              98,
+              101,
+              114,
+              95,
+              105,
+              100,
+              34,
+              58,
+              50,
+              44,
+              34,
+              103,
+              105,
+              102,
+              116,
+              95,
+              105,
+              100,
+              34,
+              58,
+              49,
+              44,
+              34,
+              112,
+              111,
+              105,
+              110,
+              116,
+              115,
+              95,
+              117,
+              115,
+              101,
+              100,
+              34,
+              58,
+              34,
+              53,
+              48,
+              48,
+              46,
+              48,
+              48,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              34,
+              99,
+              111,
+              109,
+              112,
+              108,
+              101,
+              116,
+              101,
+              100,
+              34,
+              44,
+              34,
+              99,
+              114,
+              101,
+              97,
+              116,
+              101,
+              100,
+              95,
+              97,
+              116,
+              34,
+              58,
+              34,
+              50,
+              48,
+              50,
+              54,
+              45,
+              48,
+              52,
+              45,
+              50,
+              49,
+              84,
+              48,
+              49,
+              58,
+              52,
+              50,
+              58,
+              48,
+              55,
+              43,
+              48,
+              48,
+              58,
+              48,
+              48,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 259,
+          "responseSize": 592
+        },
+        "id": "075c390f-e78b-4861-aca4-94306766b0a4",
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 592
+    },
+    "failures": [],
+    "error": null
+  }
+}

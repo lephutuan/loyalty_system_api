@@ -42,8 +42,8 @@
           "script": {
             "type": "text/javascript",
             "exec": [
-              "pm.test('Status code is 201', function () {",
-              "  pm.response.to.have.status(201);",
+              "pm.test('Status code is 201 or 409 for race scenarios', function () {",
+              "  pm.expect([201, 409]).to.include(pm.response.code);",
               "});",
               "",
               "var json = pm.response.json();",

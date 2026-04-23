@@ -6,8 +6,10 @@ namespace App\State\Processor;
 
 use App\Dto\CreateRedemptionInput;
 use App\Dto\RedemptionOutput;
+use App\Entity\Gift;
 use App\Entity\Point;
 use App\Entity\Redemption;
+use App\Entity\Wallet;
 use App\Enum\RedemptionStatus;
 use App\Repository\GiftRepository;
 use App\Repository\MemberRepository;
@@ -15,6 +17,7 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -56,31 +59,42 @@ final class CreateRedemptionProcessor implements ProcessorInterface
 
         $wallet = $member->getWallet();
 
-        $redemption = $this->entityManager->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($member, $gift, $wallet): Redemption {
-            $entityManager->lock($wallet, LockMode::PESSIMISTIC_WRITE);
-            $entityManager->lock($gift, LockMode::PESSIMISTIC_WRITE);
+        try {
+            $redemption = $this->entityManager->wrapInTransaction(function (EntityManagerInterface $entityManager) use ($member, $gift, $wallet): Redemption {
+                $lockedWallet = $entityManager->find(Wallet::class, $wallet->getId(), LockMode::PESSIMISTIC_WRITE);
+                if (!$lockedWallet instanceof Wallet) {
+                    throw new NotFoundHttpException('Wallet not found.');
+                }
 
-            if ($gift->getStock() <= 0) {
-                throw new ConflictHttpException('Gift is out of stock.');
-            }
+                $lockedGift = $entityManager->find(Gift::class, $gift->getId(), LockMode::PESSIMISTIC_WRITE);
+                if (!$lockedGift instanceof Gift) {
+                    throw new NotFoundHttpException('Gift not found.');
+                }
 
-            if ($wallet->canAfford($gift->getPointCost()) === false) {
-                throw new ConflictHttpException('Insufficient points.');
-            }
+                if ($lockedGift->getStock() <= 0) {
+                    throw new ConflictHttpException('Gift is out of stock.');
+                }
 
-            $gift->reserveOne();
-            $wallet->debit($gift->getPointCost());
+                if ($lockedWallet->canAfford($lockedGift->getPointCost()) === false) {
+                    throw new ConflictHttpException('Insufficient points.');
+                }
 
-            $redemption = new Redemption($member, $gift, $gift->getPointCost(), RedemptionStatus::Completed);
-            $negativePoints = '-' . $gift->getPointCost();
-            $point = new Point($wallet, $negativePoints, 'Redeem gift: ' . $gift->getGiftName(), null, $redemption);
+                $lockedGift->reserveOne();
+                $lockedWallet->debit($lockedGift->getPointCost());
 
-            $entityManager->persist($redemption);
-            $entityManager->persist($point);
-            $entityManager->flush();
+                $redemption = new Redemption($member, $lockedGift, $lockedGift->getPointCost(), RedemptionStatus::Completed);
+                $negativePoints = '-' . $lockedGift->getPointCost();
+                $point = new Point($lockedWallet, $negativePoints, 'Redeem gift: ' . $lockedGift->getGiftName(), null, $redemption);
 
-            return $redemption;
-        });
+                $entityManager->persist($redemption);
+                $entityManager->persist($point);
+                $entityManager->flush();
+
+                return $redemption;
+            });
+        } catch (OptimisticLockException $exception) {
+            throw new ConflictHttpException('Concurrent update detected. Please retry.', $exception);
+        }
 
         return new RedemptionOutput(
             redemptionId: (int) $redemption->getId(),

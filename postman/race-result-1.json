@@ -1,0 +1,1123 @@
+{
+  "collection": {
+    "_": {
+      "postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39"
+    },
+    "item": [
+      {
+        "id": "53cb7ebc-3adc-4c17-99e3-b75e6a5d005d",
+        "name": "API Docs",
+        "request": {
+          "description": {
+            "content": "Kiem tra endpoint docs cua API Platform.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "docs"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "0a0d15b2-74d1-4adf-b943-0b1ba63dc49d",
+        "name": "OpenAPI JSON",
+        "request": {
+          "description": {
+            "content": "Lay OpenAPI JSON.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "docs.jsonopenapi"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": []
+      },
+      {
+        "id": "e71866bb-7cdc-4b8e-8ad6-3fec2b4dcfc7",
+        "name": "Create Transaction",
+        "request": {
+          "description": {
+            "content": "Tao giao dich va cong diem theo ty le 1%.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "transactions"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": {{memberId}},\n  \"amount\": \"{{amount}}\"\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "a2fd6bb3-3210-4ce8-b391-48d85f9b062a",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 201', function () {",
+                "  pm.response.to.have.status(201);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.transaction_id) {",
+                "  pm.environment.set('lastTransactionId', json.transaction_id);",
+                "}",
+                "if (json.points_earned) {",
+                "  pm.environment.set('lastPointsEarned', json.points_earned);",
+                "}"
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "fb4ad499-f048-4300-8f23-f52e294fdc5b",
+        "name": "Create Redemption",
+        "request": {
+          "description": {
+            "content": "Doi qua bang diem.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "redemptions"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+          }
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "65c7cf3a-0835-42b5-adfe-472c899b709c",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 201', function () {",
+                "  pm.response.to.have.status(201);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.redemption_id) {",
+                "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                "}"
+              ],
+              "_lastExecutionId": "21d2fc84-f588-4bc3-bf31-a87beb222469"
+            }
+          }
+        ]
+      },
+      {
+        "id": "db58c973-6305-43d9-b938-a841c82361b0",
+        "name": "Get Wallet Inquiry",
+        "request": {
+          "description": {
+            "content": "Truy van vi diem cua member.",
+            "type": "text/plain"
+          },
+          "url": {
+            "path": [
+              "members",
+              "{{memberId}}",
+              "wallet"
+            ],
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "method": "GET"
+        },
+        "response": [],
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "id": "1167f459-3f92-4079-b5f6-d64f75e7bbb7",
+              "type": "text/javascript",
+              "exec": [
+                "pm.test('Status code is 200', function () {",
+                "  pm.response.to.have.status(200);",
+                "});",
+                "",
+                "var json = pm.response.json();",
+                "if (json.balance) {",
+                "  pm.environment.set('lastWalletBalance', json.balance);",
+                "}"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "event": [],
+    "variable": [
+      {
+        "type": "any",
+        "value": "http://localhost:8000/api/v1",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "memberId"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "giftId"
+      },
+      {
+        "type": "any",
+        "value": "100000.00",
+        "key": "amount"
+      }
+    ],
+    "info": {
+      "_postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39",
+      "name": "Loyalty System API",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+      "description": {
+        "content": "Collection test cac API trong bai tap Loyalty System.",
+        "type": "text/plain"
+      }
+    }
+  },
+  "environment": {
+    "_": {
+      "postman_variable_scope": "environment",
+      "postman_exported_at": "2026-04-18T16:00:00.000Z",
+      "postman_exported_using": "GitHub Copilot"
+    },
+    "id": "4d5f77de-71d4-46aa-95f9-4d91df272ffa",
+    "name": "Loyalty System Local",
+    "values": [
+      {
+        "type": "any",
+        "value": "http://localhost:8000/api/v1",
+        "key": "baseUrl"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "memberId"
+      },
+      {
+        "type": "any",
+        "value": "1",
+        "key": "giftId"
+      },
+      {
+        "type": "any",
+        "value": "100000.00",
+        "key": "amount"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastTransactionId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastPointsEarned"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastRedemptionId"
+      },
+      {
+        "type": "any",
+        "value": "",
+        "key": "lastWalletBalance"
+      }
+    ]
+  },
+  "globals": {
+    "id": "84ab0ee4-7718-4732-8129-c8a881e97183",
+    "values": []
+  },
+  "run": {
+    "stats": {
+      "iterations": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "items": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "scripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "requests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "tests": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "assertions": {
+        "total": 1,
+        "pending": 0,
+        "failed": 1
+      },
+      "testScripts": {
+        "total": 1,
+        "pending": 0,
+        "failed": 0
+      },
+      "prerequestScripts": {
+        "total": 0,
+        "pending": 0,
+        "failed": 0
+      }
+    },
+    "timings": {
+      "responseAverage": 148,
+      "responseMin": 148,
+      "responseMax": 148,
+      "responseSd": 0,
+      "dnsAverage": 0,
+      "dnsMin": 0,
+      "dnsMax": 0,
+      "dnsSd": 0,
+      "firstByteAverage": 0,
+      "firstByteMin": 0,
+      "firstByteMax": 0,
+      "firstByteSd": 0,
+      "started": 1776735727507,
+      "completed": 1776735727741
+    },
+    "executions": [
+      {
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 1,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "7c85f5a0-a700-489a-bec3-ed1ee554c819",
+          "httpRequestId": "6667cb5d-cb07-4012-af9c-d80e8587b7ab"
+        },
+        "item": {
+          "id": "fb4ad499-f048-4300-8f23-f52e294fdc5b",
+          "name": "Create Redemption",
+          "request": {
+            "description": {
+              "content": "Doi qua bang diem.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "redemptions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "65c7cf3a-0835-42b5-adfe-472c899b709c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.redemption_id) {",
+                  "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                  "}"
+                ],
+                "_lastExecutionId": "21d2fc84-f588-4bc3-bf31-a87beb222469"
+              }
+            }
+          ]
+        },
+        "request": {
+          "description": {
+            "content": "Doi qua bang diem.",
+            "type": "text/plain"
+          },
+          "url": {
+            "protocol": "http",
+            "port": "8000",
+            "path": [
+              "api",
+              "v1",
+              "redemptions"
+            ],
+            "host": [
+              "localhost"
+            ],
+            "query": [],
+            "variable": []
+          },
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "key": "User-Agent",
+              "value": "PostmanRuntime/7.39.1",
+              "system": true
+            },
+            {
+              "key": "Accept",
+              "value": "*/*",
+              "system": true
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache",
+              "system": true
+            },
+            {
+              "key": "Postman-Token",
+              "value": "55f4279a-af8c-4e5e-a7a2-40dc76496a24",
+              "system": true
+            },
+            {
+              "key": "Host",
+              "value": "localhost:8000",
+              "system": true
+            },
+            {
+              "key": "Accept-Encoding",
+              "value": "gzip, deflate, br",
+              "system": true
+            },
+            {
+              "key": "Connection",
+              "value": "keep-alive",
+              "system": true
+            },
+            {
+              "key": "Content-Length",
+              "value": "36",
+              "system": true
+            }
+          ],
+          "method": "POST",
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"member_id\": 1,\n  \"gift_id\": 1\n}"
+          }
+        },
+        "response": {
+          "id": "707acc48-0172-4e7f-b2bc-f37b70eaeaca",
+          "status": "Conflict",
+          "code": 409,
+          "header": [
+            {
+              "key": "Date",
+              "value": "Tue, 21 Apr 2026 01:42:07 GMT"
+            },
+            {
+              "key": "Server",
+              "value": "Apache/2.4.66 (Debian)"
+            },
+            {
+              "key": "X-Powered-By",
+              "value": "PHP/8.3.30"
+            },
+            {
+              "key": "Vary",
+              "value": "Accept"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Frame-Options",
+              "value": "deny"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, private"
+            },
+            {
+              "key": "Link",
+              "value": "<http://www.w3.org/ns/hydra/error>; rel=\"http://www.w3.org/ns/json-ld#error\",<http://localhost:8000/api/v1/docs.jsonld>; rel=\"http://www.w3.org/ns/hydra/core#apiDocumentation\""
+            },
+            {
+              "key": "Keep-Alive",
+              "value": "timeout=5, max=100"
+            },
+            {
+              "key": "Connection",
+              "value": "Keep-Alive"
+            },
+            {
+              "key": "Transfer-Encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/problem+json; charset=utf-8"
+            }
+          ],
+          "stream": {
+            "type": "Buffer",
+            "data": [
+              123,
+              34,
+              64,
+              99,
+              111,
+              110,
+              116,
+              101,
+              120,
+              116,
+              34,
+              58,
+              34,
+              92,
+              47,
+              97,
+              112,
+              105,
+              92,
+              47,
+              118,
+              49,
+              92,
+              47,
+              99,
+              111,
+              110,
+              116,
+              101,
+              120,
+              116,
+              115,
+              92,
+              47,
+              69,
+              114,
+              114,
+              111,
+              114,
+              34,
+              44,
+              34,
+              64,
+              105,
+              100,
+              34,
+              58,
+              34,
+              92,
+              47,
+              97,
+              112,
+              105,
+              92,
+              47,
+              118,
+              49,
+              92,
+              47,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              92,
+              47,
+              52,
+              48,
+              57,
+              34,
+              44,
+              34,
+              64,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              69,
+              114,
+              114,
+              111,
+              114,
+              34,
+              44,
+              34,
+              116,
+              105,
+              116,
+              108,
+              101,
+              34,
+              58,
+              34,
+              65,
+              110,
+              32,
+              101,
+              114,
+              114,
+              111,
+              114,
+              32,
+              111,
+              99,
+              99,
+              117,
+              114,
+              114,
+              101,
+              100,
+              34,
+              44,
+              34,
+              100,
+              101,
+              116,
+              97,
+              105,
+              108,
+              34,
+              58,
+              34,
+              73,
+              110,
+              115,
+              117,
+              102,
+              102,
+              105,
+              99,
+              105,
+              101,
+              110,
+              116,
+              32,
+              112,
+              111,
+              105,
+              110,
+              116,
+              115,
+              46,
+              34,
+              44,
+              34,
+              115,
+              116,
+              97,
+              116,
+              117,
+              115,
+              34,
+              58,
+              52,
+              48,
+              57,
+              44,
+              34,
+              116,
+              121,
+              112,
+              101,
+              34,
+              58,
+              34,
+              92,
+              47,
+              101,
+              114,
+              114,
+              111,
+              114,
+              115,
+              92,
+              47,
+              52,
+              48,
+              57,
+              34,
+              44,
+              34,
+              100,
+              101,
+              115,
+              99,
+              114,
+              105,
+              112,
+              116,
+              105,
+              111,
+              110,
+              34,
+              58,
+              34,
+              73,
+              110,
+              115,
+              117,
+              102,
+              102,
+              105,
+              99,
+              105,
+              101,
+              110,
+              116,
+              32,
+              112,
+              111,
+              105,
+              110,
+              116,
+              115,
+              46,
+              34,
+              125
+            ]
+          },
+          "cookie": [],
+          "responseTime": 148,
+          "responseSize": 221
+        },
+        "id": "fb4ad499-f048-4300-8f23-f52e294fdc5b",
+        "assertions": [
+          {
+            "assertion": "Status code is 201",
+            "skipped": false,
+            "error": {
+              "name": "AssertionError",
+              "index": 0,
+              "test": "Status code is 201",
+              "message": "expected response to have status code 201 but got 409",
+              "stack": "AssertionError: expected response to have status code 201 but got 409\n   at Object.eval sandbox-script.js:1:1)"
+            }
+          }
+        ]
+      }
+    ],
+    "transfers": {
+      "responseTotal": 221
+    },
+    "failures": [
+      {
+        "error": {
+          "name": "AssertionError",
+          "index": 0,
+          "test": "Status code is 201",
+          "message": "expected response to have status code 201 but got 409",
+          "stack": "AssertionError: expected response to have status code 201 but got 409\n   at Object.eval sandbox-script.js:1:1)",
+          "checksum": "37dd7bf325ada6c5f81ed1ddb1cff881",
+          "id": "e237d163-6eb3-4d12-9cbd-3d3d53e9585a",
+          "timestamp": 1776735727715,
+          "stacktrace": [
+            {
+              "fileName": "sandbox-script.js",
+              "lineNumber": 1,
+              "functionName": "Object.eval",
+              "typeName": "Object",
+              "methodName": "eval",
+              "columnNumber": 1,
+              "native": false
+            }
+          ]
+        },
+        "at": "assertion:0 in test-script",
+        "source": {
+          "id": "fb4ad499-f048-4300-8f23-f52e294fdc5b",
+          "name": "Create Redemption",
+          "request": {
+            "description": {
+              "content": "Doi qua bang diem.",
+              "type": "text/plain"
+            },
+            "url": {
+              "path": [
+                "redemptions"
+              ],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "query": [],
+              "variable": []
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "id": "65c7cf3a-0835-42b5-adfe-472c899b709c",
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status code is 201', function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "var json = pm.response.json();",
+                  "if (json.redemption_id) {",
+                  "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                  "}"
+                ],
+                "_lastExecutionId": "21d2fc84-f588-4bc3-bf31-a87beb222469"
+              }
+            }
+          ]
+        },
+        "parent": {
+          "_": {
+            "postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39"
+          },
+          "item": [
+            {
+              "id": "53cb7ebc-3adc-4c17-99e3-b75e6a5d005d",
+              "name": "API Docs",
+              "request": {
+                "description": {
+                  "content": "Kiem tra endpoint docs cua API Platform.",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "docs"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "0a0d15b2-74d1-4adf-b943-0b1ba63dc49d",
+              "name": "OpenAPI JSON",
+              "request": {
+                "description": {
+                  "content": "Lay OpenAPI JSON.",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "docs.jsonopenapi"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": []
+            },
+            {
+              "id": "e71866bb-7cdc-4b8e-8ad6-3fec2b4dcfc7",
+              "name": "Create Transaction",
+              "request": {
+                "description": {
+                  "content": "Tao giao dich va cong diem theo ty le 1%.",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "transactions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"member_id\": {{memberId}},\n  \"amount\": \"{{amount}}\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a2fd6bb3-3210-4ce8-b391-48d85f9b062a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "  pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "var json = pm.response.json();",
+                      "if (json.transaction_id) {",
+                      "  pm.environment.set('lastTransactionId', json.transaction_id);",
+                      "}",
+                      "if (json.points_earned) {",
+                      "  pm.environment.set('lastPointsEarned', json.points_earned);",
+                      "}"
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "id": "fb4ad499-f048-4300-8f23-f52e294fdc5b",
+              "name": "Create Redemption",
+              "request": {
+                "description": {
+                  "content": "Doi qua bang diem.",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "redemptions"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"member_id\": {{memberId}},\n  \"gift_id\": {{giftId}}\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "65c7cf3a-0835-42b5-adfe-472c899b709c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 201', function () {",
+                      "  pm.response.to.have.status(201);",
+                      "});",
+                      "",
+                      "var json = pm.response.json();",
+                      "if (json.redemption_id) {",
+                      "  pm.environment.set('lastRedemptionId', json.redemption_id);",
+                      "}"
+                    ],
+                    "_lastExecutionId": "21d2fc84-f588-4bc3-bf31-a87beb222469"
+                  }
+                }
+              ]
+            },
+            {
+              "id": "db58c973-6305-43d9-b938-a841c82361b0",
+              "name": "Get Wallet Inquiry",
+              "request": {
+                "description": {
+                  "content": "Truy van vi diem cua member.",
+                  "type": "text/plain"
+                },
+                "url": {
+                  "path": [
+                    "members",
+                    "{{memberId}}",
+                    "wallet"
+                  ],
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "1167f459-3f92-4079-b5f6-d64f75e7bbb7",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test('Status code is 200', function () {",
+                      "  pm.response.to.have.status(200);",
+                      "});",
+                      "",
+                      "var json = pm.response.json();",
+                      "if (json.balance) {",
+                      "  pm.environment.set('lastWalletBalance', json.balance);",
+                      "}"
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "event": [],
+          "variable": [
+            {
+              "type": "any",
+              "value": "http://localhost:8000/api/v1",
+              "key": "baseUrl"
+            },
+            {
+              "type": "any",
+              "value": "1",
+              "key": "memberId"
+            },
+            {
+              "type": "any",
+              "value": "1",
+              "key": "giftId"
+            },
+            {
+              "type": "any",
+              "value": "100000.00",
+              "key": "amount"
+            }
+          ],
+          "info": {
+            "_postman_id": "8c1f4dc6-496c-4210-b197-2f5df5e3df39",
+            "name": "Loyalty System API",
+            "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+            "description": {
+              "content": "Collection test cac API trong bai tap Loyalty System.",
+              "type": "text/plain"
+            }
+          }
+        },
+        "cursor": {
+          "position": 0,
+          "iteration": 0,
+          "length": 1,
+          "cycles": 1,
+          "empty": false,
+          "eof": false,
+          "bof": true,
+          "cr": false,
+          "ref": "7c85f5a0-a700-489a-bec3-ed1ee554c819",
+          "httpRequestId": "6667cb5d-cb07-4012-af9c-d80e8587b7ab",
+          "scriptId": "65c7cf3a-0835-42b5-adfe-472c899b709c",
+          "execution": "21d2fc84-f588-4bc3-bf31-a87beb222469"
+        }
+      }
+    ],
+    "error": null
+  }
+}

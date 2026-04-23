@@ -27,6 +27,10 @@ class Wallet
     #[ORM\Column(type: 'decimal', precision: 15, scale: 2, options: ['default' => '0.00'])]
     private string $balance = '0.00';
 
+    #[ORM\Version]
+    #[ORM\Column(type: 'integer')]
+    private int $version = 1;
+
     #[ORM\Column]
     private DateTimeImmutable $updatedAt;
 
@@ -61,6 +65,11 @@ class Wallet
     public function getUpdatedAt(): DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
     }
 
     public function credit(string $pointAmount): void

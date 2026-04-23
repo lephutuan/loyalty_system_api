@@ -48,6 +48,15 @@
     "test": [
       "phpunit"
     ],
+    "race:redeem": [
+      "node scripts/race-load-test.js redeem-race"
+    ],
+    "race:redeem:loop": [
+      "node scripts/race-load-test.js redeem-race-loop"
+    ],
+    "race:transactions": [
+      "node scripts/race-load-test.js transaction-burst"
+    ],
     "stan": [
       "phpstan analyse src tests --level=9"
     ],

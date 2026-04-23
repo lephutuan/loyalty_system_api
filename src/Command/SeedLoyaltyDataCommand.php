@@ -59,7 +59,7 @@ final class SeedLoyaltyDataCommand extends Command
         }
 
         [$memberA, $memberB, $memberC] = $this->createMembers();
-        [$giftA, $giftB, $giftC] = $this->createGifts();
+        [$giftA, $giftB, $giftC, $raceGift] = $this->createGifts();
 
         $this->createEarnTransaction($memberA, '100000.00', '1000.00', 'Seed: earn points from purchase.');
         $this->createEarnTransaction($memberB, '50000.00', '500.00', 'Seed: earn points from purchase.');
@@ -81,6 +81,7 @@ final class SeedLoyaltyDataCommand extends Command
                 ['Gift A', sprintf('%d - %s (stock: %d)', (int) $giftA->getId(), $giftA->getGiftName(), $giftA->getStock())],
                 ['Gift B', sprintf('%d - %s (stock: %d)', (int) $giftB->getId(), $giftB->getGiftName(), $giftB->getStock())],
                 ['Gift C', sprintf('%d - %s (stock: %d)', (int) $giftC->getId(), $giftC->getGiftName(), $giftC->getStock())],
+                ['Race Gift', sprintf('%d - %s (stock: %d)', (int) $raceGift->getId(), $raceGift->getGiftName(), $raceGift->getStock())],
                 ['Member A wallet balance', $memberA->getWallet()->getBalance()],
                 ['Member B wallet balance', $memberB->getWallet()->getBalance()],
                 ['Member C wallet balance', $memberC->getWallet()->getBalance()],
@@ -107,19 +108,21 @@ final class SeedLoyaltyDataCommand extends Command
     }
 
     /**
-     * @return array{Gift, Gift, Gift}
+     * @return array{Gift, Gift, Gift, Gift}
      */
     private function createGifts(): array
     {
         $giftA = new Gift('Voucher 50K', '500.00', 10, GiftStatus::Active);
         $giftB = new Gift('Bluetooth Earbuds', '1200.00', 5, GiftStatus::Active);
         $giftC = new Gift('Tote Bag Limited', '300.00', 0, GiftStatus::Inactive);
+        $raceGift = new Gift('Race Gift - Single Stock', '300.00', 1, GiftStatus::Active);
 
         $this->entityManager->persist($giftA);
         $this->entityManager->persist($giftB);
         $this->entityManager->persist($giftC);
+        $this->entityManager->persist($raceGift);
 
-        return [$giftA, $giftB, $giftC];
+        return [$giftA, $giftB, $giftC, $raceGift];
     }
 
     private function createEarnTransaction(Member $member, string $amount, string $pointsEarned, string $description): void

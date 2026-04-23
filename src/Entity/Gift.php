@@ -27,6 +27,10 @@ class Gift
     #[ORM\Column(type: 'integer')]
     private int $stock;
 
+    #[ORM\Version]
+    #[ORM\Column(type: 'integer')]
+    private int $version = 1;
+
     #[ORM\Column(length: 32, enumType: GiftStatus::class)]
     private GiftStatus $status;
 
@@ -69,6 +73,11 @@ class Gift
     public function getStatus(): GiftStatus
     {
         return $this->status;
+    }
+
+    public function getVersion(): int
+    {
+        return $this->version;
     }
 
     public function isActive(): bool
